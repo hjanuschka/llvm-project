@@ -24,3 +24,12 @@ static clang::tidy::ClangTidyModuleRegistry::Add<ChromiumModule>
     X("chromium", "Adds Chromium-specific checks.");
 
 } // namespace clang::tidy::chromium
+
+namespace clang {
+namespace tidy {
+
+// This anchor is used to force the linker to link the ChromiumModule.
+volatile int ChromiumModuleAnchorSource = 0;
+
+} // namespace tidy
+} // namespace clang

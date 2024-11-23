@@ -7,7 +7,7 @@ set(LLVM_LINK_COMPONENTS
   TimeUnitCheck.cpp
   InternalNamespaceCheck.cpp
   BlinkCastCheck.cpp
-  ChromiumModule.cpp
+  ChromiumTidyModule.cpp
   LINK_LIBS
   clangTidy
   clangTidyReadabilityModule
