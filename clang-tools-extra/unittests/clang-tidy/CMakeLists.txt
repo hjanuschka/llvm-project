@@ -55,6 +55,7 @@ target_link_libraries(ClangTidyTests
   clangTidy
   clangTidyAndroidModule
   clangTidyGoogleModule
+  clangTidyChromiumModule
   clangTidyMiscModule
   clangTidyLLVMModule
   clangTidyModernizeModule

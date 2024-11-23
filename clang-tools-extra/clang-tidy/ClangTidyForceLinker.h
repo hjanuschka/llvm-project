@@ -69,6 +69,11 @@ extern volatile int GoogleModuleAnchorSource;
 static int LLVM_ATTRIBUTE_UNUSED GoogleModuleAnchorDestination =
     GoogleModuleAnchorSource;
 
+// This anchor is used to force the linker to link the ChromiumModule.
+extern volatile int ChromiumModuleAnchorSource;
+static int LLVM_ATTRIBUTE_UNUSED ChromiumModuleAnchor = ChromiumModuleAnchorSource;
+
+
 // This anchor is used to force the linker to link the HICPPModule.
 extern volatile int HICPPModuleAnchorSource;
 static int LLVM_ATTRIBUTE_UNUSED HICPPModuleAnchorDestination =
