@@ -89,6 +89,7 @@ set(ALL_CLANG_TIDY_CHECKS
   clangTidyDarwinModule
   clangTidyFuchsiaModule
   clangTidyGoogleModule
+  clangTidyChromiumModule
   clangTidyHICPPModule
   clangTidyLinuxKernelModule
   clangTidyLLVMModule

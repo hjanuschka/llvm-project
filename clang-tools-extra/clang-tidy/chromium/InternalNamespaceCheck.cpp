@@ -18,42 +18,21 @@ void ChromiumInternalNamespaceCheck::registerMatchers(MatchFinder *Finder) {
 }
 
 void ChromiumInternalNamespaceCheck::check(const MatchFinder::MatchResult &Result) {
-  const auto *NameLoc = Result.Nodes.getNodeAs<NestedNameSpecifierLoc>("internal_ns");
-  if (!NameLoc)
+  const auto *NNS = Result.Nodes.getNodeAs<NestedNameSpecifierLoc>("internal_ns");
+  if (!NNS)
     return;
 
-  // Get the full namespace name
-  std::string FullName;
-  llvm::raw_string_ostream OS(FullName);
-  NameLoc->getNestedNameSpecifier()->print(OS, Result.Context->getPrintingPolicy());
+  // Get the location of the 'internal' namespace usage
+  SourceLocation Loc = NNS->getLocalBeginLoc();
 
-  // Extract the root namespace (everything before ::internal)
-  StringRef NamespaceStr(FullName);
-  size_t InternalPos = NamespaceStr.find("::internal");
-  if (InternalPos == StringRef::npos)
-    return;
-  
-  StringRef RootNamespace = NamespaceStr.substr(0, InternalPos);
+  // Get the source file path
+  const SourceManager &SM = *Result.SourceManager;
+  StringRef File = SM.getFilename(Loc);
 
-  // Get current file's directory
-  auto &SM = *Result.SourceManager;
-  FileID FID = SM.getFileID(NameLoc->getBeginLoc());
-  const FileEntry *File = SM.getFileEntryForID(FID);
-  if (!File)
-    return;
-
-  StringRef CurrentPath = File->getName();
-  StringRef CurrentDir = llvm::sys::path::parent_path(CurrentPath);
-  
-  // Convert root namespace to expected directory name
-  // e.g., "base::foo" -> "base"
-  StringRef ExpectedDir = RootNamespace.substr(0, RootNamespace.find(':'));
-  
-  // Check if current directory contains the namespace root
-  if (!CurrentDir.contains(ExpectedDir)) {
-    diag(NameLoc->getBeginLoc(),
-         "using internal namespace '%0' from outside its owning directory")
-        << FullName;
+  // Check if the file is in an internal directory
+  StringRef Parent = llvm::sys::path::parent_path(File);
+  if (!Parent.ends_with("internal")) {
+    diag(Loc, "do not use internal namespaces from outside internal directories");
   }
 }
 

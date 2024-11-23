@@ -24,6 +24,7 @@ add_clang_library(clangTidyCERTModule STATIC
   clangTidyBugproneModule
   clangTidyConcurrencyModule
   clangTidyGoogleModule
+  clangTidyChromiumModule
   clangTidyMiscModule
   clangTidyPerformanceModule
   clangTidyReadabilityModule
