@@ -9,7 +9,7 @@ namespace clang::tidy::chromium {
 
 ChromiumTimeUnitCheck::ChromiumTimeUnitCheck(StringRef Name, ClangTidyContext *Context)
     : ClangTidyCheck(Name, Context),
-      UseChromiumStyle(Options.get("use-chromium-style", false)),
+      UseChromiumStyle(Options.get("use-chromium-style", true)),
       kTimeUnitPatterns({
           {"Ms$|MilliSeconds?$|InMs$", {"milliseconds", "Milliseconds"}},
           {"Us$|MicroSeconds?$|InUs$", {"microseconds", "Microseconds"}},
@@ -56,11 +56,27 @@ std::string ChromiumTimeUnitCheck::buildReplacement(const std::string &VarName,
                                                   const std::string &TimeFunction,
                                                   const std::string &Value) {
   if (UseChromiumStyle) {
-    return "constexpr auto " + VarName + " = base::" + 
+    return "constexpr base::TimeDelta " + VarName + " = base::" + 
            TimeFunction + "(" + Value + ")";
   } else {
-    return "constexpr auto " + VarName + " = std::chrono::" + 
-           TimeFunction + "(" + Value + ")";
+    // For std::chrono, use the appropriate duration type
+    std::string durationType;
+    if (TimeFunction == "hours") {
+      durationType = "hours";
+    } else if (TimeFunction == "minutes") {
+      durationType = "minutes";
+    } else if (TimeFunction == "seconds") {
+      durationType = "seconds";
+    } else if (TimeFunction == "milliseconds") {
+      durationType = "milliseconds";
+    } else if (TimeFunction == "microseconds") {
+      durationType = "microseconds";
+    } else if (TimeFunction == "nanoseconds") {
+      durationType = "nanoseconds";
+    }
+    
+    return "constexpr std::chrono::" + durationType + " " + VarName + 
+           " = std::chrono::" + TimeFunction + "(" + Value + ")";
   }
 }
 
